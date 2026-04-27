@@ -31,14 +31,15 @@ from sklearn.ensemble import RandomForestClassifier
 
 import joblib
 
-
 # ==============================
 # 2. CONFIGURATION (EASY TO MODIFY)
 # ==============================
-DATA_PATH = "data/adult.csv"
+DATA_PATH = "/kaggle/input/datasets/organizations/uciml/adult-census-income/adult.csv"
 TEST_SIZE = 0.2
 RANDOM_STATE = 42
 OUTPUT_PATH = "outputs/"
+import os
+os.makedirs(OUTPUT_PATH, exist_ok=True)
 
 
 # ==============================
@@ -52,16 +53,19 @@ def load_data(path):
                'Marital-Status','Occupation','Relationship','Race','Gender',
                'Capital-Gain','Capital-Loss','Hrs-per-wk','Country','Income']
 
-    df = pd.read_csv(path, names=columns)
+    df = pd.read_csv(path, names=columns, header=0)
 
     # Replace missing values represented as '?'
     df.replace("?", np.nan, inplace=True)
+    #print(df.isnull().sum())
+    df["WorkClass"] = df["WorkClass"].fillna("Unknown")
+    df["Occupation"] = df["Occupation"].fillna("Unknown")
 
     # Convert target variable to binary (0/1)
     df['Income'] = df['Income'].apply(lambda x: 1 if '>50K' in str(x) else 0)
-
     return df
-
+df = load_data(DATA_PATH)
+df.head()
 
 # ==============================
 # 4. EXPLORATORY ANALYSIS
@@ -80,7 +84,6 @@ def explore_data(df):
         plt.tight_layout()
         plt.show()
 
-
 # ==============================
 # 5. FEATURE SELECTION
 # ==============================
@@ -90,7 +93,6 @@ def select_features(df):
     """
     df = df.drop(columns=['fnlwgt'])  # safe to remove
     return df
-
 
 # ==============================
 # 6. BUILD PREPROCESSING PIPELINE
@@ -120,6 +122,7 @@ def build_preprocessor(X):
     return preprocessor
 
 
+
 # ==============================
 # 7. MODEL COMPARISON
 # ==============================
@@ -131,7 +134,7 @@ def compare_models(X_train, y_train, preprocessor):
         "Logistic": LogisticRegression(max_iter=1000),
         "KNN": KNeighborsClassifier(),
         "DecisionTree": DecisionTreeClassifier(),
-        "NaiveBayes": GaussianNB(),
+        #"NaiveBayes": GaussianNB(),
         "SVM": SVC(probability=True)
     }
 
@@ -145,7 +148,6 @@ def compare_models(X_train, y_train, preprocessor):
 
         scores = cross_val_score(pipeline, X_train, y_train, cv=5, scoring="roc_auc")
         print(f"{name}: {scores.mean():.3f}")
-
 
 # ==============================
 # 8. TRAIN MODEL
@@ -165,7 +167,6 @@ def train_model(X_train, y_train, preprocessor):
 
     model.fit(X_train, y_train)
     return model
-
 
 # ==============================
 # 9. EVALUATE MODEL
@@ -195,7 +196,6 @@ def evaluate_model(model, X_test, y_test):
         "Predicted": y_pred
     })
     results.to_csv(OUTPUT_PATH + "predictions.csv", index=False)
-
 
 # ==============================
 # 10. HYPERPARAMETER TUNING
@@ -232,7 +232,6 @@ def tune_model(X_train, y_train, preprocessor):
 
     return search.best_estimator_
 
-
 # ==============================
 # 11. SAVE MODEL
 # ==============================
@@ -241,7 +240,6 @@ def save_model(model):
     Save trained model for reuse
     """
     joblib.dump(model, OUTPUT_PATH + "model.pkl")
-
 
 # ==============================
 # 12. MAIN WORKFLOW (AUTOMATED)
