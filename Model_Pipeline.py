@@ -130,6 +130,11 @@ def compare_models(X_train, y_train, preprocessor):
     """
     Compare multiple models using cross-validation
     """
+
+    from sklearn.model_selection import StratifiedKFold
+    # Stratified folds created
+    cv = StratifiedKFold(n_splits=5, shuffle=True, random_state=42)
+    
     models = {
         "Logistic": LogisticRegression(max_iter=1000),
         "KNN": KNeighborsClassifier(),
@@ -146,7 +151,7 @@ def compare_models(X_train, y_train, preprocessor):
             ("model", model)
         ])
 
-        scores = cross_val_score(pipeline, X_train, y_train, cv=5, scoring="roc_auc")
+        scores = cross_val_score(pipeline, X_train, y_train, cv=cv, scoring="roc_auc")
         print(f"{name}: {scores.mean():.3f}")
 
 # ==============================
