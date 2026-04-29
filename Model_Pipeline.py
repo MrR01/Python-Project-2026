@@ -181,6 +181,7 @@ def evaluate_model(model, X_test, y_test):
     print("\nModel Evaluation:")
     print(classification_report(y_test, y_pred))
     print("ROC AUC:", roc_auc_score(y_test, y_prob))
+    print("F1 Score:", f1_score(y_test, y_pred))
 
     # Confusion matrix
     cm = confusion_matrix(y_test, y_pred)
