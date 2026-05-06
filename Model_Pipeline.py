@@ -28,6 +28,7 @@ from sklearn.neighbors import KNeighborsClassifier
 from sklearn.naive_bayes import GaussianNB
 from sklearn.svm import SVC
 from sklearn.ensemble import RandomForestClassifier
+from sklearn.metrics import f1_score
 
 import joblib
 
@@ -72,16 +73,32 @@ df.head()
 # ==============================
 def explore_data(df):
     """
-    Generate simple visual insights for key categorical features
+    Generate visual insights with spacing + save plots
     """
+
     categorical_cols = ["Gender", "Relationship", "Marital-Status", "WorkClass"]
 
     for col in categorical_cols:
-        plt.figure()
-        sns.barplot(x=col, y="Income", data=df)
+        plt.figure(figsize=(8, 5))  # better size
+
+        sns.barplot(
+            x=col,
+            y="Income",
+            hue=col,
+            data=df,
+            palette="Set2",
+            legend=False
+        )
+
         plt.xticks(rotation=45)
         plt.title(f"{col} vs Income")
-        plt.tight_layout()
+
+        plt.tight_layout(pad=2)  # spacing
+
+        # SAVE IMAGE
+        safe_col = col.replace(" ", "_")
+        plt.savefig(f"{OUTPUT_PATH}{safe_col}_vs_income.png", dpi=300, bbox_inches="tight")
+
         plt.show()
 
 # ==============================
@@ -127,21 +144,19 @@ def build_preprocessor(X):
 # 7. MODEL COMPARISON
 # ==============================
 def compare_models(X_train, y_train, preprocessor):
-    """
-    Compare multiple models using cross-validation
-    """
 
     from sklearn.model_selection import StratifiedKFold
-    # Stratified folds created
+
     cv = StratifiedKFold(n_splits=5, shuffle=True, random_state=42)
-    
+
     models = {
         "Logistic": LogisticRegression(max_iter=1000),
         "KNN": KNeighborsClassifier(),
         "DecisionTree": DecisionTreeClassifier(),
-        #"NaiveBayes": GaussianNB(),
         "SVM": SVC(probability=True)
     }
+
+    results_list = []  # store results
 
     print("\nModel Comparison (ROC-AUC):")
 
@@ -151,8 +166,29 @@ def compare_models(X_train, y_train, preprocessor):
             ("model", model)
         ])
 
-        scores = cross_val_score(pipeline, X_train, y_train, cv=cv, scoring="roc_auc")
-        print(f"{name}: {scores.mean():.3f}")
+        scores = cross_val_score(
+            pipeline,
+            X_train,
+            y_train,
+            cv=cv,
+            scoring="roc_auc"
+        )
+
+        mean_score = scores.mean()
+        std_score = scores.std()
+
+        print(f"{name}: {mean_score:.3f} (+/- {std_score:.3f})")
+
+        # save results
+        results_list.append({
+            "Model": name,
+            "Mean ROC-AUC": mean_score,
+            "Std Dev": std_score
+        })
+
+    # convert to DataFrame and save
+    results_df = pd.DataFrame(results_list)
+    results_df.to_csv(OUTPUT_PATH + "model_comparison.csv", index=False)
 
 # ==============================
 # 8. TRAIN MODEL
@@ -176,32 +212,47 @@ def train_model(X_train, y_train, preprocessor):
 # ==============================
 # 9. EVALUATE MODEL
 # ==============================
+from sklearn.metrics import f1_score, precision_score, recall_score
+
 def evaluate_model(model, X_test, y_test):
-    """
-    Evaluate model performance and save outputs
-    """
+
     y_pred = model.predict(X_test)
     y_prob = model.predict_proba(X_test)[:, 1]
 
+    roc = roc_auc_score(y_test, y_prob)
+    f1 = f1_score(y_test, y_pred)
+    precision = precision_score(y_test, y_pred)
+    recall = recall_score(y_test, y_pred)
+
     print("\nModel Evaluation:")
-    print(classification_report(y_test, y_pred))
-    print("ROC AUC:", roc_auc_score(y_test, y_prob))
-    print("F1 Score:", f1_score(y_test, y_pred))
+    print("ROC AUC:", roc)
+    print("F1 Score:", f1)
+    print("Precision:", precision)
+    print("Recall:", recall)
+
+    # SAVE metrics
+    metrics_df = pd.DataFrame({
+        "Metric": ["ROC-AUC", "F1 Score", "Precision", "Recall"],
+        "Value": [roc, f1, precision, recall]
+    })
+
+    metrics_df.to_csv(OUTPUT_PATH + "evaluation_metrics.csv", index=False)
 
     # Confusion matrix
     cm = confusion_matrix(y_test, y_pred)
+
+    plt.figure(figsize=(6, 4))
     sns.heatmap(cm, annot=True, fmt='d')
+
     plt.title("Confusion Matrix")
     plt.xlabel("Predicted")
     plt.ylabel("Actual")
+
+    #  SAVE IMAGE
+    plt.savefig(OUTPUT_PATH + "confusion_matrix.png", dpi=300, bbox_inches="tight")
+
     plt.show()
 
-    # Save predictions
-    results = pd.DataFrame({
-        "Actual": y_test,
-        "Predicted": y_pred
-    })
-    results.to_csv(OUTPUT_PATH + "predictions.csv", index=False)
 
 # ==============================
 # 10. HYPERPARAMETER TUNING
@@ -299,3 +350,4 @@ def main():
 # ==============================
 if __name__ == "__main__":
     main()
+
