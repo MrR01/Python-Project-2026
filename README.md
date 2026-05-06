@@ -139,6 +139,29 @@ Higher levels of education are strongly associated with increased probability of
  
  . Pipeline Automation
 
- 
+## Key Takeaways
+  . Raw data was transformed into structured, usable insights
+  
+  . Clear relationships between demographic factors and income were identified
+  
+  . Automated workflows reduced manual effort and improved reproducibility
+  
+  . Model validation ensured reliable and consistent performance 
+
+## Future Improvements
+. Develop interactive dashboards using Tableau or Power BI
+
+. Perform deeper feature analysis (e.g. feature importance)
+
+. Incorporate additional datasets for broader insights
+
+. Deploy as a simple API or reporting tool
+
+## Summary
+
+This project focuses on turning data into insight, not just building models.
+
+It demonstrates how structured analysis, clear visualisation, and automation can support better decision-making — aligning closely with real-world Data Analyst responsibilities.
+  
    
   
