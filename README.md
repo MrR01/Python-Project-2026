@@ -36,4 +36,4 @@ Higher levels of education are strongly associated with increased probability of
 
 ### Gender vs Income
 
-![Gender vs Income](outputs/Gender_vs_income.png)
+![Gender vs Income](outputs/Plots/Gender_vs_income.png)
