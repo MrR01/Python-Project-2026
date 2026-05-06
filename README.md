@@ -36,5 +36,109 @@ Higher levels of education are strongly associated with increased probability of
 
 ### Gender vs Income
 
-[Gender vs Income](https://github.com/MrR01/Python-Project-2026/blob/main/Plots/Gender_vs_income.png)
+![Gender vs Income](Plots/Gender_vs_income.png)
 
+### Marital Status vs Income
+![Marital Status vs Income](Plots/Marital-Status_vs_income.png)
+
+
+### Relationship Status vs Income
+![MRelationship Status vs Income](Plots/Relationship_vs_income.png)
+
+### WorkClass vs Income
+![WorkClass vs Income](Plots/WorkClass_vs_income.png)
+
+
+## Methodology
+### 1. Data Cleaning & Preparation
+. Converted missing values (?) into nulls
+
+. Handled missing categorical data using an "Unknown" category
+
+. Ensured consistent data structure for analysis
+
+
+### 2. Exploratory Data Analysis (EDA)
+. Analysed relationships between demographic features and income
+
+. Used bar plots to identify patterns and trends
+
+. Focused on interpretability for business understanding
+
+### 3. Data Transformation & Modelling
+. Built a reusable preprocessing pipeline using:
+
+  . ColumnTransformer
+  
+  . OneHotEncoder for categorical variables
+  
+  . StandardScaler for numerical features
+
+  ### 4. Model Validation
+  . Applied Stratified K-Fold Cross-Validation to ensure reliable performance
+  
+  . Evaluated models using:
+
+  . ROC-AUC
+
+  . F1 Score
+
+  ### 5. Workflow Automation
+  . Structured the project into modular functions
+
+  . Automated:
+    
+   . Data loading
+   
+   . Cleaning
+   
+   . Transformation
+   
+   . Model training
+   
+   . Evaluation
+   
+   . Output generation
+
+. Saved outputs programmatically:
+
+   . Model comparison results
+   
+   . Evaluation metrics
+   
+   . Predictions
+
+   . Visualisations    
+
+   ## Model Performance
+   . [Model Comparison Results](Plots/model_comparison.xlsx) – Cross-validated model performance 
+
+   . [Evaluation Metrics](Plots/evaluation_metrics.xlsx) – ROC-AUC, F1, Precision, Recall 
+
+   . [Confusion Matrix](Plots/confusion_matrix.png) – Visual representation of classification performance
+
+  
+  
+  ## Tools & Technologies
+  
+  ### Python
+  . Pandas
+  
+  . NumPy
+  
+  . Scikit-learn
+  
+  . Seaborn / Matplotlib
+
+ ### Techniques
+ . Data Cleaning 
+ 
+ . Feature Engineering
+ 
+ . Cross-Validation
+ 
+ . Pipeline Automation
+
+ 
+   
+  
